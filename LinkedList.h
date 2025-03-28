@@ -15,6 +15,7 @@ public:
     void remove(char l);
     void recalculaCodificacoes();
     void printList();
+    string buscaCodificacaoPorSimbolo(char l);
 
 private:
     No* head;

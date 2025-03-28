@@ -133,3 +133,14 @@ void LinkedList::printList() {
         atual = atual->getNext();
     }
 }
+
+string LinkedList::buscaCodificacaoPorSimbolo(char l) {
+    No* atual = head;
+    while (atual != nullptr) {
+        if (atual->getLetra() == l) {
+            return atual->getCod(); // Retorna a codificação se encontrar o símbolo
+        }
+        atual = atual->getNext();
+    }
+    return ""; // Retorna string vazia se o símbolo não for encontrado
+}
