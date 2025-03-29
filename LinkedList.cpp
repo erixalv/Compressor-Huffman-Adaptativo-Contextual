@@ -144,3 +144,18 @@ string LinkedList::buscaCodificacaoPorSimbolo(char l) {
     }
     return ""; // Retorna string vazia se o símbolo não for encontrado
 }
+
+No* LinkedList::getHead() {
+    return head;
+}
+
+char LinkedList::buscaSimboloPorCodificacao(const std::string& cod) {
+    No* atual = head;
+    while (atual != nullptr) {
+        if (atual->getCod() == cod) {
+            return atual->getLetra();
+        }
+        atual = atual->getNext();
+    }
+    return '\0'; // Retorna caractere nulo se não encontrado
+}
