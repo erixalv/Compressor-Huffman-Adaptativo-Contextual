@@ -172,12 +172,12 @@ int main() {
     auto fim = chrono::high_resolution_clock::now();
     chrono::duration<double> duracao = fim - inicio;
     
-    cout << "Tempo de execução para K = 5: " << duracao.count() << " segundos" << endl;
+    cout << "Tempo de execução para K = 1: " << duracao.count() << " segundos" << endl;
 
     float nSimb = TextProcessing::countTotalChar();
     float bitspSimb = textoCod.size()/nSimb;
 
-    cout << "Comprimido em K = 5 com " << bitspSimb << " bits/símbolo." << endl;
+    cout << "Comprimido em K = 1 com " << bitspSimb << " bits/símbolo." << endl;
 
 
     for(int i =0; i < textoCod.size(); i += 8) {
