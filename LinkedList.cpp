@@ -90,13 +90,14 @@ void LinkedList::remove(char l) {
 }
 
 void LinkedList::recalculaCodificacoes() {
+    
     // 'size' representa o número atual de nós na lista
     int x = size;
     
     // Calcula o número mínimo de bits (n) para representar um número menor que x
     // O loop aumenta n enquanto 2^n for menor ou igual a x.
     int n = 0;
-    while ((1 << n) <= x) { // (1 << n) é equivalente a 2^n
+    while ((1 << n) < x) { // (1 << n) é equivalente a 2^n
         n++;
     }
     
@@ -134,28 +135,10 @@ void LinkedList::printList() {
     }
 }
 
-string LinkedList::buscaCodificacaoPorSimbolo(char l) {
-    No* atual = head;
-    while (atual != nullptr) {
-        if (atual->getLetra() == l) {
-            return atual->getCod(); // Retorna a codificação se encontrar o símbolo
-        }
-        atual = atual->getNext();
+string LinkedList::buscaCod(char c) {
+    No* aux = head;
+    while(aux->getLetra() != c) {
+        aux = aux->getNext();
     }
-    return ""; // Retorna string vazia se o símbolo não for encontrado
-}
-
-No* LinkedList::getHead() {
-    return head;
-}
-
-char LinkedList::buscaSimboloPorCodificacao(const std::string& cod) {
-    No* atual = head;
-    while (atual != nullptr) {
-        if (atual->getCod() == cod) {
-            return atual->getLetra();
-        }
-        atual = atual->getNext();
-    }
-    return '\0'; // Retorna caractere nulo se não encontrado
+    return aux->getCod();
 }
