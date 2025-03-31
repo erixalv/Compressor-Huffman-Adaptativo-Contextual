@@ -6,6 +6,18 @@
 
 class ArvHuffman {
 public:
+    struct Node {
+        char symbol;    // Símbolo armazenado (se folha); para nós internos pode ser irrelevante
+        int weight;     // Peso do nó
+        int order;      // Número de ordem usado pelo algoritmo FGK
+        Node *parent;
+        Node *left;
+        Node *right;
+        bool isNYT;     // Verdadeiro se o nó for o nó NYT ("Not Yet Transmitted")
+
+        Node(char sym, int ord, bool nyt);
+    };
+
     ArvHuffman(std::string s);
     ~ArvHuffman();
 
@@ -22,19 +34,15 @@ public:
 
     std::string getMySymbol();
     void setMySymbol(std::string s);
-
+    int getWeight(char sym);
+    int getTotalWeight();
+    ArvHuffman::Node* findNode(char symbol);
+    char decodeSymbol(const std::string& encoded, size_t& index);
+    bool containsPrefix(const std::string& prefix);
+    char getSymbolByCode(const std::string& code) const;
+    bool containsCode(const std::string& code) const;
 private:
-    struct Node {
-        char symbol;    // Símbolo armazenado (se folha); para nós internos pode ser irrelevante
-        int weight;     // Peso do nó
-        int order;      // Número de ordem usado pelo algoritmo FGK
-        Node *parent;
-        Node *left;
-        Node *right;
-        bool isNYT;     // Verdadeiro se o nó for o nó NYT ("Not Yet Transmitted")
-
-        Node(char sym, int ord, bool nyt);
-    };
+    
 
     Node* root;
     Node* NYT; // Ponteiro para o nó NYT atual

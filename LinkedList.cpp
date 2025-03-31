@@ -142,3 +142,14 @@ string LinkedList::buscaCod(char c) {
     }
     return aux->getCod();
 }
+
+char LinkedList::buscaLetra(string cod) {
+    No* aux = head;
+    while(aux != nullptr) {
+        if(aux->getCod() == cod) {
+            return aux->getLetra();
+        }
+        aux = aux->getNext();
+    }
+    return '\0'; // Not found
+}

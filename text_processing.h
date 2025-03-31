@@ -81,6 +81,21 @@ namespace TextProcessing {
         return caracteresUnicos.size();
     }
 
+    int countTotalChar(const std::string& inputFile = "./input.txt") {
+        std::ifstream inFile(inputFile);
+        if (!inFile) {
+            std::cerr << "Erro ao abrir o arquivo!" << std::endl;
+            return 0;
+        }
+
+        int count = 0;
+        char c;
+        while (inFile.get(c)) {
+            count++;
+        }
+        return count;
+    }
+
 } // namespace TextProcessing
 
 #endif // TEXT_PROCESSING_H

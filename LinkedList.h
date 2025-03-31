@@ -16,6 +16,7 @@ public:
     void recalculaCodificacoes();
     void printList();
     string buscaCod(char c);
+    char buscaLetra(string cod);
 
 private:
     No* head;

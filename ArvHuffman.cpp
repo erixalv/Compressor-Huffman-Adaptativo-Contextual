@@ -58,7 +58,8 @@ std::string ArvHuffman::getCode(char symbol) {
     if (symbolNodes.find(symbol) != symbolNodes.end()) {
         return generateCode(symbolNodes[symbol]);
     } else {
-        return getNYTCode();
+        NYT->weight++;  // Incrementa o peso do NYT toda vez que ele é referenciado
+        return generateCode(NYT);
     }
 }
 
@@ -122,12 +123,13 @@ void ArvHuffman::updateTree(Node* node) {
 
 // Atualiza a árvore com o símbolo recebido
 void ArvHuffman::update(char symbol) {
-    // Se o símbolo ainda não existe na árvore, é necessário expandir o nó NYT
     if (symbolNodes.find(symbol) == symbolNodes.end()) {
         Node* oldNYT = NYT;
-        oldNYT->isNYT = false; // Este nó deixa de ser NYT e se torna um nó interno
+        
+        // >>>>> REMOVER oldNYT->weight++ (não incrementamos o NYT antigo) <<<<<
+        oldNYT->isNYT = false;  // Agora vira um nó interno
 
-        // Cria dois novos nós: um nó NYT (à esquerda) e um nó folha para o novo símbolo (à direita)
+        // Cria os novos nós (novo NYT e folha para o novo símbolo)
         int newOrderRight = oldNYT->order - 1;
         int newOrderLeft = oldNYT->order - 2;
         oldNYT->left = new Node(0, newOrderLeft, true);
@@ -135,14 +137,14 @@ void ArvHuffman::update(char symbol) {
         oldNYT->left->parent = oldNYT;
         oldNYT->right->parent = oldNYT;
 
-        // Atualiza o mapeamento e o ponteiro para o nó NYT
         symbolNodes[symbol] = oldNYT->right;
         NYT = oldNYT->left;
 
-        // Atualiza a árvore a partir do nó antigo (que agora é interno)
-        updateTree(oldNYT);
+        // >>>>> INCREMENTA O PESO DO NOVO NYT (opcional, se quiser que comece com 1) <<<<<
+        NYT->weight = 1;  // Começa com peso 1, pois foi referenciado
+
+        updateTree(oldNYT);  // Atualiza a árvore a partir do nó interno
     } else {
-        // Se o símbolo já existe, atualiza a árvore a partir do nó folha correspondente
         Node* node = symbolNodes[symbol];
         updateTree(node);
     }
@@ -158,4 +160,112 @@ std::string ArvHuffman::getMySymbol() {
 
 void ArvHuffman::setMySymbol(std::string s) {
     mySymbol = s;
+}
+
+int ArvHuffman::getWeight(char sym) {
+    if (findNode(sym) != nullptr) {
+        ArvHuffman::Node* aux = findNode(sym);
+        return aux->weight;
+    }
+    return NYT->weight;
+}
+
+int ArvHuffman::getTotalWeight() {
+    return root ? root->weight : 0;
+}
+
+ArvHuffman::Node* ArvHuffman::findNode(char symbol) {
+    if (symbolNodes.find(symbol) != symbolNodes.end()) {
+        return symbolNodes[symbol];
+    }
+    return nullptr;
+}
+
+char ArvHuffman::decodeSymbol(const std::string& encoded, size_t& index) {
+    Node* current = root;
+    
+    while (current && !current->isNYT && (current->left || current->right)) {
+        if (index >= encoded.size()) {
+            throw std::runtime_error("Erro na decodificação: índice fora do intervalo.");
+        }
+        
+        if (encoded[index] == '0') {
+            current = current->left;
+        } else {
+            current = current->right;
+        }
+        index++;
+    }
+    
+    if (current && !current->isNYT) {
+        return current->symbol;
+    } else {
+        throw std::runtime_error("Erro na decodificação: símbolo inválido encontrado.");
+    }
+}
+
+
+bool ArvHuffman::containsPrefix(const std::string& prefix) {
+    Node* current = root;
+    
+    for (char bit : prefix) {
+        if (!current) return false;
+        
+        if (bit == '0') {
+            current = current->left;
+        } else if (bit == '1') {
+            current = current->right;
+        } else {
+            return false; // Entrada inválida
+        }
+    }
+    
+    return current != nullptr;
+}
+
+char ArvHuffman::getSymbolByCode(const std::string& code) const {
+    Node* current = root;
+    
+    for (char bit : code) {
+        if (!current) {
+            throw std::runtime_error("Código inválido: caminho interrompido antes do fim da codificação");
+        }
+        
+        if (bit == '0') {
+            current = current->left;
+        } else if (bit == '1') {
+            current = current->right;
+        } else {
+            throw std::runtime_error("Código inválido: contém caractere que não é 0 ou 1");
+        }
+    }
+    
+    if (current && !current->isNYT && !current->left && !current->right) {
+        return current->symbol;  // Retorna o símbolo do nó folha
+    } else if (current && current->isNYT) {
+        return '\0';  // Retorna nulo para indicar NYT
+    } else {
+        throw std::runtime_error("Código inválido: não leva a um nó folha");
+    }
+}
+
+bool ArvHuffman::containsCode(const std::string& code) const {
+    Node* current = root;
+    
+    for (char bit : code) {
+        if (!current) {
+            return false;  // Caminho interrompido antes do fim do código
+        }
+        
+        if (bit == '0') {
+            current = current->left;
+        } else if (bit == '1') {
+            current = current->right;
+        } else {
+            return false;  // Código contém caractere inválido (não é 0 ou 1)
+        }
+    }
+    
+    // Retorna true se chegou a um nó válido (folha ou NYT)
+    return current != nullptr;
 }

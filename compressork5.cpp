@@ -10,6 +10,8 @@
 #include <vector>
 #include <memory>
 #include <bitset>
+#include <chrono>
+
 
 
 using namespace std;
@@ -65,9 +67,12 @@ int main() {
 
     string charPrev, charPrev2, charPrev3, charPrev4, charPrev5;
 
+    auto inicio = chrono::high_resolution_clock::now();
+
     while (file.get(c)) {
 
-        //Contexto K = -1
+
+        //Contexto K = -1:
         if(countOp == 0) {
             textoCod += eqv->buscaCod(c); //codifica de acordo com a lista equivalente
             eqv->remove(c);               //remove da lista após a codificação
@@ -81,6 +86,8 @@ int main() {
             charPrev4 = c;
             charPrev5 = c;
         }
+        
+        //Contexto K = 0:
         if(countOp == 1) {
             //Contexto K = 0
             if(k0->contains(c)) {             //Se K = 0 tem o símbolo, codifica e atualiza
@@ -540,7 +547,7 @@ int main() {
             charPrev5 += c;
         }
 
-        //Contexto K = 4
+        //Contexto K = 4:
         if(countOp == 5) {
             bool found4 = 0;
 
@@ -1056,6 +1063,7 @@ int main() {
             charPrev = c;
         }
 
+        //Contexto K = 5:
         if(countOp >= 6) {
             bool found5 = 0;
 
@@ -2096,9 +2104,18 @@ int main() {
     }
     file.close();
 
-    //fileOut << textoCod;
+    auto fim = chrono::high_resolution_clock::now();
+    chrono::duration<double> duracao = fim - inicio;
+    
+    cout << "Tempo de execução para K = 5: " << duracao.count() << " segundos" << endl;
 
-    for(int i =0; i < textoCod.size(); i+=8) {
+    float nSimb = TextProcessing::countTotalChar();
+    float bitspSimb = textoCod.size()/nSimb;
+
+    cout << "Comprimido em K = 5 com " << bitspSimb << " bits/símbolo." << endl;
+
+
+    for(int i =0; i < textoCod.size(); i += 8) {
         string byteStr = textoCod.substr(i, 8);
 
         while(byteStr.size()<8) {
@@ -2113,4 +2130,5 @@ int main() {
 
     delete eqv;
     delete k0;
+
 }
